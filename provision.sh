@@ -74,3 +74,23 @@ fi
 echo -e "${YLW}Getting IP from terraform${NC}"
 IP=`../terraform output | awk '{print $3}'`
 echo -e "${GRN}IP: $IP ${NC}"
+echo -e "${YLW}Switching directory to ansible${NC}"
+cd ../ansible
+echo -e "${YLW}cleaning up the hosts file if there is any old ips present in it${NC}"
+#following or is for linux vs bsd
+sed '/.*myra\]$/,/^\[.*/{//!d;}' hosts > hosts.bk || sed '/.*myra\]$/,/^\[.*/{//!d}' hosts>hosts.bk
+mv hosts.bk hosts
+LINE=`cat hosts| grep -n 'myra'|grep -o '^[0-9]*'`
+let "LINE++"
+awk -v IP="$IP" -v LN="$LINE" 'NR==LN{print IP}1' hosts > hosts.new && mv hosts.new hosts
+echo -e "${GRN}Added new IP to hosts file${NC}"
+echo "${YLW}Running ansible ping\n${NC}"
+ansible myra -i hosts -m ping
+if [ $? -eq 0 ]; then
+    echo -e "\n\n\"ansible ping\" ran ${GRN}OK\n${NC}"
+else
+	echo -e "\n\n\"ansible ping\" ${RED}Failed. \n${YLW}It could be becuase the aws ec2 instance is still initiating. Please retry.${NC}\nCheck above output for more details.\n"
+	exit
+fi
+echo -e "${YLW}Applying ansible play-book\n${NC}"
+ansible-playbook -i hosts --extra-vars "" site.yml

@@ -1,0 +1,14 @@
+- name: Copy nginx conf to server
+  copy:
+    src: "{{ role_path }}/files/nginx.conf"
+    dest: /etc/nginx/sites-available/myra.conf
+    owner: root
+    group: root
+    mode: 0644
+- name: Activating site
+  file:
+    src: /etc/nginx/sites-available/wordpress.conf
+    dest: /etc/nginx/sites-enabled/wordpress.conf
+    state: link    
+  notify: 
+    - restart nginx

@@ -1,0 +1,10 @@
+- name: wordpress with docker mysql
+  hosts: myra
+  become: yes
+
+  roles:
+    - setup
+
+#    - webserver-configuration
+    # 
+    # 
