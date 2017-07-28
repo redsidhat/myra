@@ -16,4 +16,12 @@
     pip: requirements=/var/myra/requirements.txt
     notify:
     - restart gunicorn
-
+  - name: start application
+    # django_manage: 
+    #   command: runserver &
+    #   app_path: /var/myra/ 
+    shell: ./manage.py runserver &
+    args:
+      chdir: /var/myra/
+    async: 10
+    poll: 0

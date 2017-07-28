@@ -84,7 +84,7 @@ LINE=`cat hosts| grep -n 'myra'|grep -o '^[0-9]*'`
 let "LINE++"
 awk -v IP="$IP" -v LN="$LINE" 'NR==LN{print IP}1' hosts > hosts.new && mv hosts.new hosts
 echo -e "${GRN}Added new IP to hosts file${NC}"
-echo "${YLW}Running ansible ping\n${NC}"
+echo -e "${YLW}Running ansible ping\n${NC}"
 ansible myra -i hosts -m ping
 if [ $? -eq 0 ]; then
     echo -e "\n\n\"ansible ping\" ran ${GRN}OK\n${NC}"

@@ -5,6 +5,6 @@
   roles:
     - setup
     - deploy
-#    - webserver-configuration
+    - webserver-configuration
     # 
     # 

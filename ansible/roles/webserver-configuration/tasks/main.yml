@@ -5,10 +5,16 @@
     owner: root
     group: root
     mode: 0644
+- name: making sure nginx default site is removed
+  file:
+    dest: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: 
+    - restart nginx
 - name: Activating site
   file:
-    src: /etc/nginx/sites-available/wordpress.conf
-    dest: /etc/nginx/sites-enabled/wordpress.conf
+    src: /etc/nginx/sites-available/myra.conf
+    dest: /etc/nginx/sites-enabled/myra.conf
     state: link    
   notify: 
     - restart nginx
