@@ -1,4 +1,8 @@
 #!/bin/bash
+RED='\033[0;31m'
+NC='\033[0m'
+GRN='\033[0;32m'
+YLW='\033[1;33m'
 #checking machine type
 unameOut="$(uname -s)"
 case "${unameOut}" in
@@ -52,3 +56,21 @@ cd terraform_code
 echo `cat keypair.tf |sed -e "s|.*public_key.*|$REPLACE|g" > keypair.tf.bk && mv keypair.tf.bk keypair.tf`
 echo "Running terraform plan"
 ../terraform plan
+if [ $? -eq 0 ]; then
+    echo -e "\n\n\"terraform plan\" ran ${GRN}OK${NC}\n"
+else
+	echo -e "\n\n\"terraform plan\" ${RED}failed${NC}. Check above output for more details.\n"
+	exit
+fi
+
+echo -e "${YLW}Running \"terraform apply\"${NC}"
+../terraform apply
+if [ $? -eq 0 ]; then
+    echo -e "\n\n\"terraform apply\" ran ${GRN}OK\n${NC}"
+else
+	echo -e "\n\n\"terraform apply\" ${RED}Failed${NC}. Check above output for more details.\n"
+	exit
+fi
+echo -e "${YLW}Getting IP from terraform${NC}"
+IP=`../terraform output | awk '{print $3}'`
+echo -e "${GRN}IP: $IP ${NC}"
