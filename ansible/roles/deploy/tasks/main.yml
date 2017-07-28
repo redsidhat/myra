@@ -1,0 +1,19 @@
+---
+  - name: Create deploy dirs
+    file:
+      path: /var/myra/
+      state: directory
+      mode: 0755
+  - name: Clone/pull project repo
+    git: 
+      repo: https://metarain.githost.io/kunal/devopsDummy.git 
+      dest: /var/myra 
+      accept_hostkey: yes
+    notify:
+    - restart gunicorn
+
+  - name: install python packages
+    pip: requirements=/var/myra/requirements.txt
+    notify:
+    - restart gunicorn
+

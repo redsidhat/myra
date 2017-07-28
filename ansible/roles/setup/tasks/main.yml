@@ -1,5 +1,5 @@
 ---
-- name: Installing nginx
+- name: Installing system components
   apt:
     name: "{{item}}"
     update_cache: yes
@@ -7,3 +7,14 @@
     state: installed
   with_items:
     - nginx
+    - git
+    - python-pip 
+    - python-dev 
+    - libpq-dev 
+- name: Installing app components
+  pip:
+    name: "{{item}}"
+  with_items:
+    - django 
+    - gunicorn 
+    - psycopg2
