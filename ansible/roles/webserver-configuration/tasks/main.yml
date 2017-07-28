@@ -18,3 +18,5 @@
     state: link    
   notify: 
     - restart nginx
+- name: Explicitly restarting nginx to be on the safe side
+  shell: /etc/init.d/nginx restart

@@ -48,11 +48,20 @@ else
 	echo "Keypair found; proceeding"
 fi
 PUB_KEY=`cat keyfile.pub`
+
+if [ ! -z $1 ]; then
+	cd terraform_code
+	REPLACE="    instance_type = \\\"$1\\\""
+	#Did not use direct file replacement to ensure compatibility on linux and BSD based OSs
+	echo `cat origin.tf |sed -e "s|.*instance_type.*|$REPLACE|g" > origin.tf.bk && mv origin.tf.bk origin.tf`
+else
+	cd terraform_code
+fi
+
+
 echo "Updating terraform keypair class with new public key"
 REPLACE="  public_key = \\\"$PUB_KEY\\\""
 #Following line does a simple sed replace in keypair.tf. 
-#Did not use direct file replacement to ensure compatibility on linux and BSD based OSs
-cd terraform_code
 echo `cat keypair.tf |sed -e "s|.*public_key.*|$REPLACE|g" > keypair.tf.bk && mv keypair.tf.bk keypair.tf`
 echo "Running terraform plan"
 ../terraform plan
@@ -84,7 +93,8 @@ LINE=`cat hosts| grep -n 'myra'|grep -o '^[0-9]*'`
 let "LINE++"
 awk -v IP="$IP" -v LN="$LINE" 'NR==LN{print IP}1' hosts > hosts.new && mv hosts.new hosts
 echo -e "${GRN}Added new IP to hosts file${NC}"
-echo -e "${YLW}Running ansible ping\n${NC}"
+echo -e "${YLW}Waiting 10 seconds and Running ansible ping\n${NC}"
+sleep 10
 ansible myra -i hosts -m ping
 if [ $? -eq 0 ]; then
     echo -e "\n\n\"ansible ping\" ran ${GRN}OK\n${NC}"
@@ -93,4 +103,4 @@ else
 	exit
 fi
 echo -e "${YLW}Applying ansible play-book\n${NC}"
-ansible-playbook -i hosts --extra-vars "" site.yml
+ansible-playbook -i hosts --extra-vars "dsn=\"https://27a38021772c4bde8a0ce068486232ab:95128db1a4df49ec8ba178eef3771f15@sentry.io/196145\"" site.yml
