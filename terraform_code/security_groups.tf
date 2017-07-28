@@ -1,5 +1,5 @@
-resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
+resource "aws_security_group" "allow_ssh_myra" {
+  name        = "allow_ssh_myra"
   description = "Allow ssh ports"
 
   # HTTP access from anywhere
@@ -18,8 +18,8 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-resource "aws_security_group" "allow_http" {
-  name = "allow_http"
+resource "aws_security_group" "allow_http_myra" {
+  name = "allow_http_myra"
   description = "Allow all http"
 
   ingress {
