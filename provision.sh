@@ -10,6 +10,7 @@ if [ $machine == 'UNKNOWN' ]; then
 	echo "Unknown machine type. Exiting"
 	exit 1
 fi
+echo "Checking if terraform is present"
 if [ ! -f terraform ]; then
     echo "Terraform is not present downloading."
     if [ $machine == 'Linux' ]; then
@@ -28,4 +29,14 @@ if [ ! -f terraform ]; then
     fi
     echo "cleaning up"
     rm -rf terraform.zip
+else
+	echo "Terraform is present"
 fi
+echo "Checking if the keypair exist in the directory"
+if [ ! -f keyfile || ! -f keyfile.pub ]; then
+	echo "Keypair not present. Generating new keypair"
+	ssh-keygen -b 2048 -t rsa -f ./keyfile -q -N ""
+    if [ $? -ne 0 ]; then
+    	print "keyfile generation failed"
+    	exit 1
+    fi
